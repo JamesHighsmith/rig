@@ -17,10 +17,14 @@
 13. [Optimization Algorithms](#optimization-algorithms)
 14. [Compliance and Regulations](#compliance-and-regulations)
 15. [Changelog](#changelog)
+16. [Cost Structure](#cost-structure)
 
 ## Introduction
 
-The WorldLine API optimizes the movement of atomic clusters across scales, from Earth-based construction to interplanetary missions. This documentation covers v1.0 of the API.
+Welcome to the WorldLine API v1.0 Documentation. The WorldLine API is your tool for optimizing the movement of atomic clusters, whether you're lifting a single steel beam on Earth or coordinating a massive construction project on Mars. This documentation will guide you through the API's capabilities and how it can enhance your engineering, architecture, and logistics projects.
+
+### Why Use WorldLine API?
+Engineers, architects, and project managers can leverage the WorldLine API to streamline complex construction and transport tasks, reduce costs, and ensure precision in project execution. With a focus on optimizing energy usage and reducing risks, the WorldLine API is designed to handle both terrestrial and interplanetary challenges.
 
 ## Core Concepts
 
@@ -28,12 +32,17 @@ The WorldLine API optimizes the movement of atomic clusters across scales, from 
 - **Atomic Cluster**: Any entity from a single object to a planet.
 - **Project**: A collection of related worldlines and operations.
 
+### Examples
+- **Single Item Movement**: Moving a single steel beam with a crane.
+- **Multiple Items, Single Location**: Coordinating the movement of several beams in the same construction site.
+- **Multiple Items, Multiple Cranes**: Synchronizing lifts from multiple cranes across different sites.
+
 ## Authentication
 
 We use OAuth 2.0 for secure authentication. Obtain your client credentials from the developer portal.
 
-Example:
-```
+### Example
+```bash
 curl -X POST https://api.worldline.space/v1/oauth/token \
   -d grant_type=client_credentials \
   -d client_id=YOUR_CLIENT_ID \
@@ -41,9 +50,12 @@ curl -X POST https://api.worldline.space/v1/oauth/token \
 ```
 
 Use the returned access token in the Authorization header:
-```
+```bash
 Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
+
+### Token Renewal
+Tokens expire after one hour. Use the refresh token endpoint to renew them.
 
 ## Versioning
 
@@ -51,7 +63,7 @@ The current version is v1.0. We use semantic versioning (MAJOR.MINOR.PATCH). API
 
 ## Base URL
 
-```
+```bash
 https://api.worldline.space/v1
 ```
 
@@ -65,7 +77,7 @@ https://api.worldline.space/v1
 POST /worldlines
 ```
 
-Request body:
+**Request Body:**
 ```json
 {
   "type": "CRANE_LIFT",
@@ -97,13 +109,14 @@ Request body:
 }
 ```
 
-Response:
+**Response:**
 ```json
 {
   "id": "wl_123abc",
   "status": "PLANNED",
   "energy_required": 500,
   "risk_factors": ["WIND_SPEED", "PAYLOAD_SWING"],
+  "cost": 100,
   "path": [
     {"x": 0, "y": 0, "z": 0, "t": "2023-07-01T10:00:00Z"},
     {"x": 5, "y": 10, "z": 15, "t": "2023-07-01T10:00:30Z"},
@@ -124,7 +137,7 @@ Response:
 POST /projects
 ```
 
-Request body:
+**Request Body:**
 ```json
 {
   "name": "Mars Pyramid Alpha",
@@ -155,7 +168,7 @@ Request body:
 }
 ```
 
-Response:
+**Response:**
 ```json
 {
   "id": "proj_mars_789xyz",
@@ -178,12 +191,11 @@ Response:
 
 For endpoints returning multiple items, use `limit` and `offset` query parameters:
 
-```
+```http
 GET /worldlines?limit=20&offset=40
 ```
 
-Response includes pagination info:
-
+**Response includes pagination info:**
 ```json
 {
   "data": [...],
@@ -204,6 +216,7 @@ Register webhooks to receive real-time updates:
 POST /webhooks
 ```
 
+**Request Body:**
 ```json
 {
   "url": "https://your-server.com/worldline-events",
@@ -229,15 +242,39 @@ We use standard HTTP status codes. Error responses include:
 
 ## Rate Limiting
 
-- 1000 requests per minute per API key.
+- **General Rate Limit**: 1000 requests per minute per API key.
 - Headers include `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset`.
 
 ## SDKs and Client Libraries
 
 Official SDKs:
-- Python: `pip install worldline-api`
-- JavaScript: `npm install worldline-api`
-- Java: Available on Maven Central
+- **Python**: `pip install worldline-api`
+- **JavaScript**: `npm install worldline-api`
+- **Java**: Available on Maven Central
+
+### Example Usage
+
+**Python SDK:**
+```python
+from worldline_api import WorldLineClient
+
+client = WorldLineClient(api_key='YOUR_API_KEY')
+worldline = client.create_worldline({
+    "type": "CRANE_LIFT",
+    "payload": {
+        "type": "STEEL_BEAM",
+        "mass": 2000,
+        "dimensions": {"length": 10, "width": 0.5, "height": 0.5}
+    },
+    "start": {"x": 0, "y": 0, "z": 0, "t": "2023-07-01T10:00:00Z"},
+    "end": {"x": 10, "y": 20, "z": 30, "t": "2023-07-01T10:01:00Z"},
+    "equipment": {"type": "TOWER_CRANE", "model": "XL5000"},
+    "constraints": {"max_speed": 0.5, "max
+
+_acceleration": 0.2}
+})
+print(worldline)
+```
 
 ## Data Models
 
@@ -252,6 +289,7 @@ Worldline:
   end: Coordinate4D
   status: string
   path: Array<Coordinate4D>
+  cost: number
 
 Project:
   id: string
@@ -272,25 +310,29 @@ Coordinate4D:
 ## Optimization Algorithms
 
 We use a combination of:
-- A* pathfinding for spatial optimization
-- Genetic algorithms for multi-objective optimization
-- Physics-based simulations for accurate motion prediction
+- **A\* Pathfinding**: For spatial optimization.
+- **Genetic Algorithms**: For multi-objective optimization.
+- **Physics-based Simulations**: For accurate motion prediction.
 
 Details available under NDA.
 
 ## Compliance and Regulations
 
-- GDPR compliant: We do not store personal data.
-- Adheres to UN Outer Space Treaty regulations.
+- **GDPR Compliant**: We do not store personal data.
 - Regular security audits and penetration testing.
 
 ## Changelog
 
-- 2023-07-01: v1.0 released
-  - Initial public API release
-  - Basic worldline and project management
-- 2023-08-15: v1.1 released
-  - Added multi-fleet coordination endpoints
-  - Improved Mars atmospheric modeling
 
-For full documentation, interactive API explorer, and additional resources, visit our [Developer Portal](https://developers.worldline.space).
+
+## Cost Structure
+
+The cost to move each atomic cluster is based on the energy required. The formula considers mass, distance, and any constraints like speed and acceleration.
+
+### Example Calculation
+Moving a 2000 kg steel beam over 30 meters:
+- **Energy Required**: 500 units
+- **Cost per Unit of Energy**: $0.20
+- **Total Cost**: $100
+
+For full documentation, interactive API explorer, and additional resources, visit our [Developer Portal](https://github.com/JamesHighsmith/rig).
